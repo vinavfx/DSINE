@@ -3,8 +3,8 @@
 import os
 import argparse
 
-DATASET_DIR = '/media/gwangbin/ssd/datasets/'   # where datasets are stored         NOTE: this should be changed!
-EXPERIMENT_DIR = '/home/gwangbin/experiments/'  # where to save the experiments     NOTE: this should be changed!
+DATASET_DIR = './datasets/'   # where datasets are stored         NOTE: this should be changed!
+EXPERIMENT_DIR = './experiments/'  # where to save the experiments     NOTE: this should be changed!
 PROJECT_DIR = os.path.split(os.path.dirname(os.path.realpath(__file__)))[0]
 
 
