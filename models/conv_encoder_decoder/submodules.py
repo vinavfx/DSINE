@@ -27,16 +27,50 @@ class Encoder(nn.Module):
         # Remove last layer
         basemodel.global_pool = nn.Identity()
         basemodel.classifier = nn.Identity()
-        self.original_model = basemodel
+        modules = basemodel._modules
+
+        blocks = modules['blocks']._modules
+
+        self.conv_stem = modules['conv_stem']
+        self.bn1 = modules['bn1']
+        self.act1 = modules['act1']
+
+        self.block0 = blocks['0']
+        self.block1 = blocks['1']
+        self.block2 = blocks['2']
+        self.block3 = blocks['3']
+        self.block4 = blocks['4']
+        self.block5 = blocks['5']
+        self.block6 = blocks['6']
+
+        self.conv_head = modules['conv_head']
+        self.bn2 = modules['bn2']
+        self.act2 = modules['act2']
+        self.global_pool = modules['global_pool']
+        self.classifier = modules['classifier']
+
 
     def forward(self, x):
         features = [x]
-        for k, v in self.original_model._modules.items():
-            if (k == 'blocks'):
-                for ki, vi in v._modules.items():
-                    features.append(vi(features[-1]))
-            else:
-                features.append(v(features[-1]))
+
+        features.append(self.conv_stem(features[-1]))
+        features.append(self.bn1(features[-1]))
+        features.append(self.act1(features[-1]))
+
+        features.append(self.block0(features[-1]))
+        features.append(self.block1(features[-1]))
+        features.append(self.block2(features[-1]))
+        features.append(self.block3(features[-1]))
+        features.append(self.block4(features[-1]))
+        features.append(self.block5(features[-1]))
+        features.append(self.block6(features[-1]))
+
+        features.append(self.conv_head(features[-1]))
+        features.append(self.bn2(features[-1]))
+        features.append(self.act2(features[-1]))
+        features.append(self.global_pool(features[-1]))
+        features.append(self.classifier(features[-1]))
+
         return features
 
 
