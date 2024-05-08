@@ -33,7 +33,7 @@ class ConvGRU(nn.Module):
         return h
     
 
-def get_unfold(pred_norm, ps, pad):
+def get_unfold(pred_norm:torch.Tensor, ps:int, pad:int):
     B, C, H, W = pred_norm.shape
     pred_norm = F.pad(pred_norm, pad=(pad,pad,pad,pad), mode='replicate')       # (B, C, h, w)
     pred_norm_unfold = F.unfold(pred_norm, [ps, ps], padding=0)                 # (B, C X ps*ps, h*w)

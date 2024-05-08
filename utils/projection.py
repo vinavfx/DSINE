@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 import torch.nn.functional as F
+from torch.types import _dtype
 
 
 def intrins_zero_to(intrins):
@@ -86,20 +87,25 @@ def intrins_to_intrins_inv(intrins):
     return intrins_inv
 
 
-def intrins_from_fov(new_fov, H, W, dtype=torch.float32, device='cpu'):
+def intrins_from_fov(new_fov:float, H:int, W:int, dtype:_dtype=torch.float32, device:str='cpu'):
     """ define intrins based on field-of-view
         principal point is assumed to be at the center
 
         NOTE: new_fov should be in degrees
         NOTE: top-left is (0,0)
     """
-    new_fx = new_fy = (max(H, W) / 2.0) / np.tan(np.deg2rad(new_fov / 2.0))
-    new_cx = (W / 2.0) - 0.5
-    new_cy = (H / 2.0) - 0.5
+
+    new_fov_rad = torch.deg2rad(torch.tensor(new_fov) / 2.0)
+    max_hw = torch.tensor([H, W]).float().max()
+    new_fx = (max_hw / 2.0) / torch.tan(new_fov_rad)
+
+    new_cx = int( (W / 2.0) - 0.5 )
+    new_cy = int( (H / 2.0) - 0.5 )
+    new_fx = int(new_fx)
 
     new_intrins = torch.tensor([
         [new_fx,    0,          new_cx  ],
-        [0,         new_fy,     new_cy  ],
+        [0,         new_fx,     new_cy  ],
         [0,         0,          1       ]
     ], dtype=dtype, device=device)
 

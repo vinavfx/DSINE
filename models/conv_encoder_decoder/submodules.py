@@ -16,6 +16,28 @@ INPUT_CHANNELS_DICT = {
     7: [2560, 224, 80, 48, 32]
 }
 
+class Encoder2(nn.Module):
+    def __init__(self, B=5, pretrained=True):
+        """ e.g. B=5 will return EfficientNet-B5
+        """
+        super(Encoder, self).__init__()
+        basemodel_name = 'tf_efficientnet_b%s_ap' % B
+        basemodel = geffnet.create_model(basemodel_name, pretrained=pretrained)
+        # Remove last layer
+        basemodel.global_pool = nn.Identity()
+        basemodel.classifier = nn.Identity()
+        self.original_model = basemodel
+
+    def forward(self, x):
+        features = [x]
+        for k, v in self.original_model._modules.items():
+            if (k == 'blocks'):
+                for ki, vi in v._modules.items():
+                    features.append(vi(features[-1]))
+            else:
+                features.append(v(features[-1]))
+
+        return features
 
 class Encoder(nn.Module):
     def __init__(self, B=5, pretrained=True):
@@ -27,49 +49,28 @@ class Encoder(nn.Module):
         # Remove last layer
         basemodel.global_pool = nn.Identity()
         basemodel.classifier = nn.Identity()
-        modules = basemodel._modules
-
-        blocks = modules['blocks']._modules
-
-        self.conv_stem = modules['conv_stem']
-        self.bn1 = modules['bn1']
-        self.act1 = modules['act1']
-
-        self.block0 = blocks['0']
-        self.block1 = blocks['1']
-        self.block2 = blocks['2']
-        self.block3 = blocks['3']
-        self.block4 = blocks['4']
-        self.block5 = blocks['5']
-        self.block6 = blocks['6']
-
-        self.conv_head = modules['conv_head']
-        self.bn2 = modules['bn2']
-        self.act2 = modules['act2']
-        self.global_pool = modules['global_pool']
-        self.classifier = modules['classifier']
-
+        self.original_model = basemodel
 
     def forward(self, x):
         features = [x]
 
-        features.append(self.conv_stem(features[-1]))
-        features.append(self.bn1(features[-1]))
-        features.append(self.act1(features[-1]))
+        features.append(self.original_model.conv_stem(features[-1]))
+        features.append(self.original_model.bn1(features[-1]))
+        features.append(self.original_model.act1(features[-1]))
 
-        features.append(self.block0(features[-1]))
-        features.append(self.block1(features[-1]))
-        features.append(self.block2(features[-1]))
-        features.append(self.block3(features[-1]))
-        features.append(self.block4(features[-1]))
-        features.append(self.block5(features[-1]))
-        features.append(self.block6(features[-1]))
+        features.append(self.original_model.blocks[0](features[-1]))
+        features.append(self.original_model.blocks[1](features[-1]))
+        features.append(self.original_model.blocks[2](features[-1]))
+        features.append(self.original_model.blocks[3](features[-1]))
+        features.append(self.original_model.blocks[4](features[-1]))
+        features.append(self.original_model.blocks[5](features[-1]))
+        features.append(self.original_model.blocks[6](features[-1]))
 
-        features.append(self.conv_head(features[-1]))
-        features.append(self.bn2(features[-1]))
-        features.append(self.act2(features[-1]))
-        features.append(self.global_pool(features[-1]))
-        features.append(self.classifier(features[-1]))
+        features.append(self.original_model.conv_head(features[-1]))
+        features.append(self.original_model.bn2(features[-1]))
+        features.append(self.original_model.act2(features[-1]))
+        features.append(self.original_model.global_pool(features[-1]))
+        features.append(self.original_model.classifier(features[-1]))
 
         return features
 
@@ -134,7 +135,7 @@ def upsample_via_bilinear(out, up_mask, downsample_ratio):
     return F.interpolate(out, scale_factor=downsample_ratio, mode='bilinear', align_corners=False)
 
 
-def upsample_via_mask(out, up_mask, downsample_ratio, padding='zero'):
+def upsample_via_mask(out: torch.Tensor, up_mask: torch.Tensor, downsample_ratio: int, padding:str='zero'):
     """ convex upsampling
     """
     # out: low-resolution output (B, o_dim, H, W)

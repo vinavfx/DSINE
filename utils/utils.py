@@ -176,7 +176,7 @@ def compute_normal_metrics2(total_normal_errors):
 
 
 
-def get_padding(orig_H, orig_W):
+def get_padding(orig_H:int, orig_W:int):
     """ returns how the input of shape (orig_H, orig_W) should be padded
         this ensures that both H and W are divisible by 32
     """

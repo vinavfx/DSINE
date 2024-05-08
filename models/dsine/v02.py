@@ -6,6 +6,8 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch import Tensor
+from typing import List
 
 from models.conv_encoder_decoder.submodules import Encoder, UpSampleBN, UpSampleGN, \
     INPUT_CHANNELS_DICT, upsample_via_bilinear, upsample_via_mask, get_prediction_head
@@ -59,14 +61,14 @@ class DSINE_v02(nn.Module):
         self.pad = (self.ps - 1) // 2
 
         # prediction heads
-        self.prob_head = get_prediction_head(self.hidden_dim+2, 64, self.ps*self.ps)   # weights assigned for each nghbr pixel 
+        self.prob_head = get_prediction_head(self.hidden_dim+2, 64, self.ps*self.ps)   # weights assigned for each nghbr pixel
         self.xy_head = get_prediction_head(self.hidden_dim+2, 64, self.ps*self.ps*2)   # rotation axis for each nghbr pixel
         self.angle_head = get_prediction_head(self.hidden_dim+2, 64, self.ps*self.ps)  # rotation angle for each nghbr pixel
 
         # prediction heads - weights used for upsampling the coarse resolution output
         self.up_prob_head = get_prediction_head(self.hidden_dim+2, 64, 9 * self.downsample_ratio * self.downsample_ratio)
 
-    def get_ray(self, intrins, H, W, orig_H, orig_W, return_uv=False):
+    def get_ray(self, intrins:Tensor, H:int, W:int, orig_H:int, orig_W:int, return_uv:bool=False):
         B, _, _ = intrins.shape
         fu = intrins[:, 0, 0].unsqueeze(-1).unsqueeze(-1) * (W / orig_W)
         cu = intrins[:, 0, 2].unsqueeze(-1).unsqueeze(-1) * (W / orig_W)
@@ -83,13 +85,14 @@ class DSINE_v02(nn.Module):
         else:
             return F.normalize(ray, dim=1)
 
-    def upsample(self, h, pred_norm, uv_8):
+    def upsample(self, h:Tensor, pred_norm:Tensor, uv_8:Tensor):
         up_mask = self.up_prob_head(torch.cat([h, uv_8], dim=1))
-        up_pred_norm = upsample_via_mask(pred_norm, up_mask, self.downsample_ratio, padding='replicate')
+        up_pred_norm = upsample_via_mask(
+            pred_norm, up_mask, self.downsample_ratio, padding='replicate')
         up_pred_norm = F.normalize(up_pred_norm, dim=1)
         return up_pred_norm
 
-    def refine(self, h, feat_map, pred_norm, intrins, orig_H, orig_W, uv_8, ray_8):
+    def refine(self, h:Tensor, feat_map:Tensor, pred_norm:Tensor, intrins:Tensor, orig_H:int, orig_W:int, uv_8:Tensor, ray_8:Tensor):
         B, C, H, W = pred_norm.shape
         fu = intrins[:, 0, 0][:,None,None,None] * (W / orig_W) # (B, 1, 1, 1)
         cu = intrins[:, 0, 2][:,None,None,None] * (W / orig_W) # (B, 1, 1, 1)
@@ -162,7 +165,7 @@ class DSINE_v02(nn.Module):
         # ray ReLU
         if self.v_relu:
             nghbr_normals_rot = torch.cat([
-                self.ray_relu(nghbr_normals_rot[:, :, i, :, :], ray_8).unsqueeze(2) 
+                self.ray_relu(nghbr_normals_rot[:, :, i, :, :], ray_8).unsqueeze(2)
                 for i in range(nghbr_normals_rot.size(2))
                 ], dim=2)
 
@@ -175,8 +178,8 @@ class DSINE_v02(nn.Module):
         up_pred_norm = F.normalize(up_pred_norm, dim=1)
 
         return h_new, pred_norm, up_pred_norm
-    
-    def forward(self, img, intrins=None, mode='train'):
+
+    def forward(self, img:Tensor, intrins:Tensor, refine:int):
         # Step 1. encoder
         features = self.encoder(img)
 
@@ -190,7 +193,7 @@ class DSINE_v02(nn.Module):
         ray_8 = self.get_ray(intrins, orig_H//8, orig_W//8, orig_H, orig_W)
 
         # Step 3. decoder - initial prediction
-        pred_norm, feat_map, h = self.decoder(features, uvs=(uv_32, uv_16, uv_8))
+        pred_norm, feat_map, h = self.decoder(features, uv_32, uv_16, uv_8)
 
         if self.v_relu:
             pred_norm = self.ray_relu(pred_norm, ray_8)
@@ -200,12 +203,13 @@ class DSINE_v02(nn.Module):
 
         # iterative refinement
         up_pred_norm = self.upsample(h, pred_norm, uv_8)
+
         pred_list = [up_pred_norm]
-        for i in range(self.num_iter_train) if mode == 'train' else range(self.num_iter_test):
-            h, pred_norm, up_pred_norm = self.refine(h, feat_map, 
-                                                     pred_norm.detach(), 
+        for _ in torch.arange(refine):
+            h, pred_norm, up_pred_norm = self.refine(h, feat_map,
+                                                     pred_norm.detach(),
                                                      intrins, orig_H, orig_W, uv_8, ray_8)
-            pred_list.append(up_pred_norm)
+        pred_list.append(up_pred_norm)
         return pred_list
 
     def get_1x_lr_params(self):
@@ -242,9 +246,8 @@ class Decoder(nn.Module):
         self.feature_head = get_prediction_head(i_dim+2, h_dim, feature_dim)
         self.hidden_head = get_prediction_head(i_dim+2, h_dim, hidden_dim)
 
-    def forward(self, features, uvs):
+    def forward(self, features:List[Tensor], uv_32: Tensor, uv_16:Tensor, uv_8:Tensor):
         _, _, x_block2, x_block3, x_block4 = features[4], features[5], features[6], features[8], features[11]
-        uv_32, uv_16, uv_8 = uvs
 
         x_d0 = self.conv2(torch.cat([x_block4, uv_32], dim=1))
         x_d1 = self.up1(x_d0, torch.cat([x_block3, uv_16], dim=1))
