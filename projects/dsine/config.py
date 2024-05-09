@@ -38,8 +38,8 @@ def get_args(test=False):
     #↑↑↑↑
 
     # read arguments from txt file
-    assert '.txt' in sys.argv[1]
-    arg_filename_with_prefix = '@' + sys.argv[1]
+    dsine_txt = 'projects/dsine/experiments/exp001_cvpr2024/dsine.txt'
+    arg_filename_with_prefix = '@' + dsine_txt
     args = parser.parse_args([arg_filename_with_prefix] + sys.argv[2:])
 
     #↓↓↓↓
