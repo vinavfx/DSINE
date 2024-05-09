@@ -32,6 +32,7 @@ Despite the growing demand for accurate surface normal estimation models, existi
 
 ## Compilie (optional)
 ```sh
+# Linux
 git clone https://github.com/vinavfx/DSINE-for-Nuke.git
 cd ./DSINE-for-Nuke
 
@@ -41,6 +42,7 @@ pip install -r requirements.txt
 
 wget https://huggingface.co/bdsqlsz/qinglong_controlnet-lllite/resolve/main/Annotators/dsine.pt
 python ./dsine_nuke.py
+# Convert with CatFileCreator.nk
 ```
 1. Open nuke and create the CatFileCreator node
 2. in Torchscript File put ./nuke/Cattery/DSINE/DSINE.pt

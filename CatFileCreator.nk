@@ -1,0 +1,20 @@
+set cut_paste_input [stack 0]
+version 14.0 v7
+CatFileCreator {
+ inputs 0
+ torchScriptFile nuke/Cattery/DSINE/DSINE.pt
+ catFile nuke/Cattery/DSINE/DSINE.cat
+ channelsIn "rgba.red, rgba.green, rgba.blue"
+ channelsOut "rgba.red, rgba.green, rgba.blue"
+ modelId dsine
+ name CatFileCreator1
+ selected true
+ xpos 1206
+ ypos 2
+ postage_stamp false
+ addUserKnob {20 User}
+ addUserKnob {3 fov}
+ fov 60
+ addUserKnob {3 iterations}
+ iterations 5
+}

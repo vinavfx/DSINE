@@ -21,7 +21,9 @@ class dsine_nuke(torch.nn.Module):
 
         self.normalize = transforms.Normalize(
             mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-        self.refine = 5
+
+        self.iterations = 5
+        self.fov = 60
 
     def forward(self, img):
         _, _, orig_H, orig_W = img.shape
@@ -33,12 +35,12 @@ class dsine_nuke(torch.nn.Module):
         img = self.normalize(img)
 
         intrins = intrins_from_fov(
-            new_fov=60.0, H=orig_H, W=orig_W, device=device).unsqueeze(0)
+            new_fov=float(self.fov), H=orig_H, W=orig_W, device=device).unsqueeze(0)
 
         intrins[:, 0, 2] += lrtb[0]
         intrins[:, 1, 2] += lrtb[2]
 
-        pred_norm = self.model(img, intrins, self.refine)[-1]
+        pred_norm = self.model(img, intrins, self.iterations)[-1]
         pred_norm = pred_norm[:, :, lrtb[2]
             :lrtb[2]+orig_H, lrtb[0]:lrtb[0]+orig_W]
 
