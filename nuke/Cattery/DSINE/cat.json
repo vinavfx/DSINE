@@ -1,0 +1,13 @@
+{
+    "minimum_nuke_version_required": 13.2,
+    "version": 1,
+    "category": "Map",
+    "description": "DSINE - https://github.com/vinavfx/DSINE",
+    "cats": [
+        {
+            "filepath": "DSINE.gizmo",
+            "name": "DSINE",
+            "icon": "DSINE.png"
+        }
+    ]
+}
