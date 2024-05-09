@@ -12,27 +12,42 @@ Gizmo {
  addUserKnob {3 iterations}
  iterations 5
  addUserKnob {20 about l About}
- addUserKnob {26 _name l "" +STARTLINE T "<b>DSINE</b> v1.0<br><br><b>Francisco Contreras</b> - Senior Compositor<br><a href=\"http://vinavfx.com\"><span style=\"color:#C8C8C8;\">vinavfx.com</span></a>"}
+ addUserKnob {26 _name l "" +STARTLINE T "<b>DSINE</b> v1.1<br><br><b>Francisco Contreras</b> - Senior Compositor<br><a href=\"http://vinavfx.com\"><span style=\"color:#C8C8C8;\">vinavfx.com</span></a>"}
  addUserKnob {26 ""}
 }
  Input {
   inputs 0
   name Input
-  xpos -40
-  ypos -10
+  xpos -327
+  ypos -23
  }
+set N1fd988e0 [stack 0]
+ Dot {
+  name Dot1
+  xpos -132
+  ypos -19
+ }
+set N99f4d30 [stack 0]
+ AddChannels {
+  channels alpha
+  name AddChannels1
+  xpos -166
+  ypos 21
+ }
+push $N99f4d30
  Colorspace {
   colorspace_out sRGB
   name Colorspace1
   xpos -40
-  ypos 16
+  ypos -23
  }
  Inference {
   modelFile "\[lsearch -inline \[plugins -all DSINE.cat] *.cat]"
   serialiseKnob {fov:{parent.fov};iterations:{parent.iterations};}
   name Inference2
+  selected true
   xpos -40
-  ypos 42
+  ypos 20
  }
  Grade {
   blackpoint -1
@@ -46,9 +61,25 @@ Gizmo {
   xpos -40
   ypos 94
  }
+ Copy {
+  inputs 2
+  from0 rgba.alpha
+  to0 rgba.alpha
+  name Copy1
+  xpos -166
+  ypos 88
+ }
+push $N1fd988e0
+ Switch {
+  inputs 2
+  which {{"\[exists parent.input0]"}}
+  name Switch1
+  xpos -327
+  ypos 94
+ }
  Output {
   name Output1
-  xpos -40
-  ypos 120
+  xpos -327
+  ypos 172
  }
 end_group
