@@ -26,7 +26,7 @@ Despite the growing demand for accurate surface normal estimation models, existi
 
 ## Installation
 
-1. Download and unzip the latest release from [here](https://drive.google.com/file/d/1c6rGFIZi8ZizG3rzLNuAWoYk38MqfME9/view?usp=sharing).
+1. Download and unzip the latest release from [here](https://drive.google.com/file/d/14rA6bm_e9Fff557myRpjiJ9oXP4ltHoS/view?usp=drive_link).
 2. Copy the extracted Cattery folder to .nuke or your plugins path.
 3. In the toolbar, choose Cattery > Update or simply restart Nuke.
 

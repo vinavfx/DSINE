@@ -7,53 +7,235 @@ Gizmo {
  addUserKnob {26 gpuName l "" -STARTLINE T "NVIDIA GeForce RTX 3060"}
  addUserKnob {41 useGPUIfAvailable l "Use GPU if available" T Inference2.useGPUIfAvailable}
  addUserKnob {26 ""}
- addUserKnob {3 fov}
+ addUserKnob {3 fov l Fov}
  fov 60
- addUserKnob {3 iterations}
+ addUserKnob {3 iterations l Iterations}
  iterations 5
+ addUserKnob {7 details_thickness l "Details Thickness" R 0 10}
+ details_thickness 1
+ addUserKnob {7 details_mix l "Details Mix"}
+ details_mix 1
  addUserKnob {20 about l About}
- addUserKnob {26 _name l "" +STARTLINE T "<b>DSINE</b> v1.1<br><br><b>Francisco Contreras</b> - Senior Compositor<br><a href=\"http://vinavfx.com\"><span style=\"color:#C8C8C8;\">vinavfx.com</span></a>"}
+ addUserKnob {26 _name l "" +STARTLINE T "<b>DSINE</b> v1.2<br><br><b>Francisco Contreras</b> - Senior Compositor<br><a href=\"http://vinavfx.com\"><span style=\"color:#C8C8C8;\">vinavfx.com</span></a>"}
  addUserKnob {26 ""}
 }
  Input {
   inputs 0
   name Input
-  xpos -327
-  ypos -23
+  xpos -564
+  ypos -106
  }
-set N1fd988e0 [stack 0]
+set N2bc811c0 [stack 0]
  Dot {
   name Dot1
-  xpos -132
-  ypos -19
+  xpos -343
+  ypos -102
  }
-set N99f4d30 [stack 0]
+set N11f8fb90 [stack 0]
  AddChannels {
   channels alpha
   name AddChannels1
-  xpos -166
-  ypos 21
+  xpos -377
+  ypos 370
  }
-push $N99f4d30
+push $N11f8fb90
+ Dot {
+  name Dot2
+  xpos -167
+  ypos -102
+ }
+set N7a8a74a0 [stack 0]
+ Group {
+  name vBumpToNormal
+  onCreate "def exe(func, *args):\n    allowed_knobs = \['Boolean_Knob', 'PyScript_Knob']\n    exclude_knobs = \['selected']\n\n    knob = nuke.thisKnob()\n    allowed_knob = knob.Class() in allowed_knobs and not knob.name() in exclude_knobs\n\n    try:\n        return eval(func)(*args)\n    except Exception as e:\n\n        if not allowed_knob:\n            return\n\n        if not 'vina' in str(e):\n            return\n\n        message = 'ask <b>Francisco Contreras</b> for the script <b>\"\{\}\"</b>, since the script for this method is not embedded in the node. Thank you.'.format(\n            func)\n        nuke.message(message)\n"
+  tile_color 0xa982ffff
+  xpos -201
+  ypos 263
+  addUserKnob {20 controls l Controls}
+  addUserKnob {7 bump_height l "bump height" R 0 10}
+  bump_height {{parent.details_thickness}}
+  addUserKnob {20 about l About}
+  addUserKnob {26 _name l "" +STARTLINE T "<b>vBumpToNormal</b> v1.1<br><br><b>Francisco Contreras</b> - Senior Compositor<br><a href=\"http://vinavfx.com\"><span style=\"color:#C8C8C8;\">vinavfx.com</span></a>"}
+  addUserKnob {26 ""}
+ }
+  Input {
+   inputs 0
+   name Bump
+   xpos 941
+   ypos -110
+  }
+set N342bf8e0 [stack 0]
+  Dot {
+   name Dot1
+   xpos 975
+   ypos 337
+  }
+push $N342bf8e0
+  Dot {
+   name Dot2
+   xpos 505
+   ypos -107
+  }
+set N345fcf80 [stack 0]
+  Transform {
+   translate {0 {"parent.bump_height / 2"}}
+   center {256 256}
+   shutteroffset centred
+   name prey
+   selected true
+   xpos 529
+   ypos -23
+  }
+set N3e25c220 [stack 0]
+push $N3e25c220
+  Transform {
+   translate {0 {-parent.bump_height}}
+   center {256 256}
+   black_outside false
+   shutteroffset centred
+   name y
+   xpos 529
+   ypos 54
+  }
+  Merge2 {
+   inputs 2
+   operation minus
+   bbox B
+   name Merge2
+   xpos 651
+   ypos 54
+  }
+set N34632890 [stack 0]
+push $N345fcf80
+  Transform {
+   translate {{parent.bump_height/2} 0}
+   center {256 256}
+   shutteroffset centred
+   name prex
+   xpos 398
+   ypos -25
+  }
+set N34633550 [stack 0]
+push $N34633550
+  Transform {
+   translate {{-parent.bump_height} 0}
+   center {256 256}
+   shutteroffset centred
+   name x
+   xpos 398
+   ypos 49
+  }
+  Merge2 {
+   inputs 2
+   operation minus
+   bbox B
+   name Merge1
+   xpos 261
+   ypos 49
+  }
+  ShuffleCopy {
+   inputs 2
+   green green
+   blue white
+   name ShuffleCopy1
+   xpos 461
+   ypos 195
+  }
+  Group {
+   name vHardness
+   tile_color 0x384196ff
+   xpos 461
+   ypos 239
+   addUserKnob {20 controls l Controls}
+   addUserKnob {41 channels l Channels T grade.channels}
+   addUserKnob {26 ""}
+   addUserKnob {7 hardness l Hardness R -1 1}
+   addUserKnob {7 bw l "White -> Black" R -0.5 0.5}
+   bw -0.25
+   addUserKnob {20 about l About}
+   addUserKnob {26 _name l "" +STARTLINE T "<b>Francisco Contreras - 2021</b>\n<br>Senior Compositor"}
+   addUserKnob {26 ""}
+   addUserKnob {26 website l "" +STARTLINE T "<b>Web Site:</b>\n<br>\n<a href=\"http://vinavfx.com\"><span style=\"color:#C8C8C8;\">vinavfx.com</span></a>"}
+  }
+   Input {
+    inputs 0
+    name Image
+    xpos -40
+    ypos -118
+   }
+   Grade {
+    blackpoint {{"(hardness / 2) + (bw * ( 1 + ( 1 - hardness)))"}}
+    whitepoint {{"(1 - (hardness / 2) ) + (bw * ( 1 + ( 1 - hardness )))"}}
+    white_clamp true
+    name grade
+    selected true
+    xpos -40
+    ypos -50
+   }
+   Output {
+    name Output1
+    xpos -40
+    ypos 26
+   }
+  end_group
+  Shuffle {
+   blue white
+   alpha white
+   name Shuffle1
+   xpos 461
+   ypos 274
+  }
+  CopyBBox {
+   inputs 2
+   name CopyBBox1
+   xpos 462
+   ypos 334
+  }
+  Output {
+   name Output1
+   xpos 462
+   ypos 368
+  }
+push $N34632890
+  Viewer {
+   frame_range 1-100
+   monitorOutNDISenderName "NukeX - test - Viewer1"
+   monitorOutOutputTransform rec709
+   name Viewer1
+   xpos 261
+   ypos 75
+  }
+ end_group
+set N342f1540 [stack 0]
+push $N342f1540
+ ChannelMerge {
+  inputs 2
+  A rgba.red
+  B rgba.green
+  output rgba.blue
+  name ChannelMerge1
+  xpos -201
+  ypos 289
+ }
+push $N7a8a74a0
  Colorspace {
   colorspace_out sRGB
   name Colorspace1
   xpos -40
-  ypos -23
+  ypos -106
  }
  Inference {
   modelFile "\[lsearch -inline \[plugins -all DSINE.cat] *.cat]"
   serialiseKnob {fov:{parent.fov};iterations:{parent.iterations};}
   name Inference2
-  selected true
   xpos -40
-  ypos 20
+  ypos -14
  }
  Grade {
   blackpoint -1
   name Grade1
   xpos -40
-  ypos 68
+  ypos 12
  }
  Colorspace {
   colorspace_in sRGB
@@ -61,25 +243,38 @@ push $N99f4d30
   xpos -40
   ypos 94
  }
+ Merge2 {
+  inputs 2
+  operation overlay
+  mix {{parent.details_mix}}
+  name Merge1
+  xpos -40
+  ypos 301
+ }
+ Dot {
+  name Dot3
+  xpos -6
+  ypos 442
+ }
  Copy {
   inputs 2
   from0 rgba.alpha
   to0 rgba.alpha
   name Copy1
-  xpos -166
-  ypos 88
+  xpos -377
+  ypos 432
  }
-push $N1fd988e0
+push $N2bc811c0
  Switch {
   inputs 2
   which {{"\[exists parent.input0]"}}
   name Switch1
-  xpos -327
-  ypos 94
+  xpos -564
+  ypos 438
  }
  Output {
   name Output1
-  xpos -327
-  ypos 172
+  xpos -564
+  ypos 534
  }
 end_group
