@@ -1,5 +1,5 @@
-#! /opt/Nuke14.0v7/libnuke-14.0.7.so -nx
-version 14.0 v7
+#! /opt/Nuke15.0v4/libnuke-15.0.4.so -nx
+version 15.0 v4
 Gizmo {
  onCreate "def exe(func, *args):\n    allowed_knobs = \['Boolean_Knob', 'PyScript_Knob']\n    exclude_knobs = \['selected']\n\n    knob = nuke.thisKnob()\n    allowed_knob = knob.Class() in allowed_knobs and not knob.name() in exclude_knobs\n\n    try:\n        return eval(func)(*args)\n    except Exception as e:\n\n        if not allowed_knob:\n            return\n\n        if not 'vina' in str(e):\n            return\n\n        message = 'ask <b>Francisco Contreras</b> for the script <b>\"\{\}\"</b>, since the script for this method is not embedded in the node. Thank you.'.format(\n            func)\n        nuke.message(message)\n"
  addUserKnob {20 controls l Controls}
@@ -22,29 +22,23 @@ Gizmo {
  Input {
   inputs 0
   name Input
-  xpos -564
-  ypos -106
+  xpos -377
+  ypos -187
  }
-set N2bc811c0 [stack 0]
- Dot {
-  name Dot1
-  xpos -343
-  ypos -102
- }
-set N11f8fb90 [stack 0]
  AddChannels {
-  channels alpha
+  channels rgba
   name AddChannels1
   xpos -377
-  ypos 370
+  ypos -106
  }
-push $N11f8fb90
+set N20e62a00 [stack 0]
+push $N20e62a00
  Dot {
   name Dot2
   xpos -167
   ypos -102
  }
-set N7a8a74a0 [stack 0]
+set N230889a0 [stack 0]
  Group {
   name vBumpToNormal
   onCreate "def exe(func, *args):\n    allowed_knobs = \['Boolean_Knob', 'PyScript_Knob']\n    exclude_knobs = \['selected']\n\n    knob = nuke.thisKnob()\n    allowed_knob = knob.Class() in allowed_knobs and not knob.name() in exclude_knobs\n\n    try:\n        return eval(func)(*args)\n    except Exception as e:\n\n        if not allowed_knob:\n            return\n\n        if not 'vina' in str(e):\n            return\n\n        message = 'ask <b>Francisco Contreras</b> for the script <b>\"\{\}\"</b>, since the script for this method is not embedded in the node. Thank you.'.format(\n            func)\n        nuke.message(message)\n"
@@ -64,30 +58,29 @@ set N7a8a74a0 [stack 0]
    xpos 941
    ypos -110
   }
-set N342bf8e0 [stack 0]
+set N230b3380 [stack 0]
   Dot {
    name Dot1
    xpos 975
    ypos 337
   }
-push $N342bf8e0
+push $N230b3380
   Dot {
    name Dot2
    xpos 505
    ypos -107
   }
-set N345fcf80 [stack 0]
+set N230bd360 [stack 0]
   Transform {
    translate {0 {"parent.bump_height / 2"}}
    center {256 256}
    shutteroffset centred
    name prey
-   selected true
    xpos 529
    ypos -23
   }
-set N3e25c220 [stack 0]
-push $N3e25c220
+set N230c2780 [stack 0]
+push $N230c2780
   Transform {
    translate {0 {-parent.bump_height}}
    center {256 256}
@@ -105,8 +98,7 @@ push $N3e25c220
    xpos 651
    ypos 54
   }
-set N34632890 [stack 0]
-push $N345fcf80
+push $N230bd360
   Transform {
    translate {{parent.bump_height/2} 0}
    center {256 256}
@@ -115,8 +107,8 @@ push $N345fcf80
    xpos 398
    ypos -25
   }
-set N34633550 [stack 0]
-push $N34633550
+set N22dbf580 [stack 0]
+push $N22dbf580
   Transform {
    translate {{-parent.bump_height} 0}
    center {256 256}
@@ -196,18 +188,9 @@ push $N34633550
    xpos 462
    ypos 368
   }
-push $N34632890
-  Viewer {
-   frame_range 1-100
-   monitorOutNDISenderName "NukeX - test - Viewer1"
-   monitorOutOutputTransform rec709
-   name Viewer1
-   xpos 261
-   ypos 75
-  }
  end_group
-set N342f1540 [stack 0]
-push $N342f1540
+set N2308dd00 [stack 0]
+push $N2308dd00
  ChannelMerge {
   inputs 2
   A rgba.red
@@ -217,7 +200,7 @@ push $N342f1540
   xpos -201
   ypos 289
  }
-push $N7a8a74a0
+push $N230889a0
  Colorspace {
   colorspace_out sRGB
   name Colorspace1
@@ -264,17 +247,9 @@ push $N7a8a74a0
   xpos -377
   ypos 432
  }
-push $N2bc811c0
- Switch {
-  inputs 2
-  which {{"\[exists parent.input0]"}}
-  name Switch1
-  xpos -564
-  ypos 438
- }
  Output {
   name Output1
-  xpos -564
-  ypos 534
+  xpos -377
+  ypos 537
  }
 end_group
