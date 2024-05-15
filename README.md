@@ -1,14 +1,12 @@
 # DSINE for Nuke 
 Ported to Nuke [![ported](https://img.shields.io/badge/by:_Francisco_Contreras-blue?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/francisco-contreras-cuevas/)
 
+The files from the original repository were converted to be compatible with Nuke Cattery
+
 #### Limitations:
 1. It works very poorly for movement since it blinking too much.
 2. Requires using a deflicker
 3. The result varies depending on the resolution
-
----
-
-The files from the original repository were converted to be compatible with Nuke Cattery
 
 <p align="center">
   <img width=20% src="https://github.com/baegwangbin/DSINE/raw/main/docs/img/dsine/logo_with_outline.png">
@@ -50,4 +48,27 @@ pip install -r requirements.txt
 wget https://huggingface.co/bdsqlsz/qinglong_controlnet-lllite/resolve/main/Annotators/dsine.pt
 python ./dsine_nuke.py
 # Convert with CatFileCreator.nk
+```
+## Citation
+
+If you find our work useful in your research please consider citing our paper:
+
+```
+@inproceedings{bae2024dsine,
+    title     = {Rethinking Inductive Biases for Surface Normal Estimation},
+    author    = {Gwangbin Bae and Andrew J. Davison},
+    booktitle = {IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+    year      = {2024}
+}
+```
+
+If you use the models that also estimate the uncertainty, please also cite the following paper, where we introduced the loss function:
+
+```
+@InProceedings{bae2021eesnu,
+    title     = {Estimating and Exploiting the Aleatoric Uncertainty in Surface Normal Estimation}
+    author    = {Gwangbin Bae and Ignas Budvytis and Roberto Cipolla},
+    booktitle = {International Conference on Computer Vision (ICCV)},
+    year      = {2021}                         
+}
 ```
