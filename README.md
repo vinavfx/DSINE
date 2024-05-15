@@ -1,5 +1,13 @@
+# DSINE for Nuke 
+Ported to Nuke [![ported](https://img.shields.io/badge/by:_Francisco_Contreras-blue?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/francisco-contreras-cuevas/)
 
-# DSINE for Nuke [![author](https://img.shields.io/badge/by:_Francisco_Contreras-blue?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/francisco-contreras-cuevas/)
+#### Limitations:
+1. It works very poorly for movement since it blinking too much.
+2. Requires using a deflicker
+3. The result varies depending on the resolution
+
+---
+
 The files from the original repository were converted to be compatible with Nuke Cattery
 
 <p align="center">
@@ -28,7 +36,6 @@ Despite the growing demand for accurate surface normal estimation models, existi
 
 1. Download and unzip the latest release from [here](https://drive.google.com/file/d/14rA6bm_e9Fff557myRpjiJ9oXP4ltHoS/view?usp=drive_link).
 2. Copy the extracted Cattery folder to .nuke or your plugins path.
-3. In the toolbar, choose Cattery > Update or simply restart Nuke.
 
 ## Compilie (optional)
 ```sh
@@ -44,7 +51,3 @@ wget https://huggingface.co/bdsqlsz/qinglong_controlnet-lllite/resolve/main/Anno
 python ./dsine_nuke.py
 # Convert with CatFileCreator.nk
 ```
-1. Open nuke and create the CatFileCreator node
-2. in Torchscript File put ./nuke/Cattery/DSINE/DSINE.pt
-3. in Cat File put ./nuke/Cattery/DSINE/DSINE.cat
-4. Use 3 input and 3 output channels (rgba.red, rgba.green, rgba.blue)
