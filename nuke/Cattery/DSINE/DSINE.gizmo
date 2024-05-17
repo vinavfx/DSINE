@@ -1,10 +1,11 @@
-#! /opt/Nuke15.0v4/libnuke-15.0.4.so -nx
+#! /opt/Nuke14.0v7/libnuke-14.0.7.so -nx
+version 14.0 v7
 Gizmo {
- onCreate "def exe(func, *args):\n    allowed_knobs = \['Boolean_Knob', 'PyScript_Knob']\n    exclude_knobs = \['selected']\n\n    knob = nuke.thisKnob()\n    allowed_knob = knob.Class() in allowed_knobs and not knob.name() in exclude_knobs\n\n    try:\n        return eval(func)(*args)\n    except Exception as e:\n\n        if not allowed_knob:\n            return\n\n        if not 'vina' in str(e):\n            return\n\n        message = 'ask <b>Francisco Contreras</b> for the script <b>\"\{\}\"</b>, since the script for this method is not embedded in the node. Thank you.'.format(\n            func)\n        nuke.message(message)\n"
+ onCreate "inference = nuke.toNode('Inference')\nnuke.thisNode()\[\"gpuName\"].setValue(inference\[\"gpuName\"].value())"
  addUserKnob {20 controls l Controls}
  addUserKnob {26 "" l "Local GPU:" T ""}
  addUserKnob {26 gpuName l "" -STARTLINE T "NVIDIA GeForce RTX 3060"}
- addUserKnob {41 useGPUIfAvailable l "Use GPU if available" T Inference2.useGPUIfAvailable}
+ addUserKnob {41 useGPUIfAvailable l "Use GPU if available" T Inference.useGPUIfAvailable}
  addUserKnob {26 ""}
  addUserKnob {3 fov l Fov}
  fov 60
@@ -30,14 +31,14 @@ Gizmo {
   xpos -377
   ypos -106
  }
-set N20e62a00 [stack 0]
-push $N20e62a00
+set N14a18ef0 [stack 0]
+push $N14a18ef0
  Dot {
   name Dot2
   xpos -167
   ypos -102
  }
-set N230889a0 [stack 0]
+set Nc368a3f0 [stack 0]
  Group {
   name vBumpToNormal
   onCreate "def exe(func, *args):\n    allowed_knobs = \['Boolean_Knob', 'PyScript_Knob']\n    exclude_knobs = \['selected']\n\n    knob = nuke.thisKnob()\n    allowed_knob = knob.Class() in allowed_knobs and not knob.name() in exclude_knobs\n\n    try:\n        return eval(func)(*args)\n    except Exception as e:\n\n        if not allowed_knob:\n            return\n\n        if not 'vina' in str(e):\n            return\n\n        message = 'ask <b>Francisco Contreras</b> for the script <b>\"\{\}\"</b>, since the script for this method is not embedded in the node. Thank you.'.format(\n            func)\n        nuke.message(message)\n"
@@ -57,19 +58,19 @@ set N230889a0 [stack 0]
    xpos 941
    ypos -110
   }
-set N230b3380 [stack 0]
+set Nc4e22b20 [stack 0]
   Dot {
    name Dot1
    xpos 975
    ypos 337
   }
-push $N230b3380
+push $Nc4e22b20
   Dot {
    name Dot2
    xpos 505
    ypos -107
   }
-set N230bd360 [stack 0]
+set N589fe220 [stack 0]
   Transform {
    translate {0 {"parent.bump_height / 2"}}
    center {256 256}
@@ -78,8 +79,8 @@ set N230bd360 [stack 0]
    xpos 529
    ypos -23
   }
-set N230c2780 [stack 0]
-push $N230c2780
+set N1b1a5ad0 [stack 0]
+push $N1b1a5ad0
   Transform {
    translate {0 {-parent.bump_height}}
    center {256 256}
@@ -97,7 +98,7 @@ push $N230c2780
    xpos 651
    ypos 54
   }
-push $N230bd360
+push $N589fe220
   Transform {
    translate {{parent.bump_height/2} 0}
    center {256 256}
@@ -106,8 +107,8 @@ push $N230bd360
    xpos 398
    ypos -25
   }
-set N22dbf580 [stack 0]
-push $N22dbf580
+set N591afe80 [stack 0]
+push $N591afe80
   Transform {
    translate {{-parent.bump_height} 0}
    center {256 256}
@@ -188,8 +189,8 @@ push $N22dbf580
    ypos 368
   }
  end_group
-set N2308dd00 [stack 0]
-push $N2308dd00
+set N645bec50 [stack 0]
+push $N645bec50
  ChannelMerge {
   inputs 2
   A rgba.red
@@ -199,7 +200,7 @@ push $N2308dd00
   xpos -201
   ypos 289
  }
-push $N230889a0
+push $Nc368a3f0
  Colorspace {
   colorspace_out sRGB
   name Colorspace1
@@ -209,7 +210,7 @@ push $N230889a0
  Inference {
   modelFile "\[lsearch -inline \[plugins -all DSINE.cat] *.cat]"
   serialiseKnob {fov:{parent.fov};iterations:{parent.iterations};}
-  name Inference2
+  name Inference
   xpos -40
   ypos -14
  }
